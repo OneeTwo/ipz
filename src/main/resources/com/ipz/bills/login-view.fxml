@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.ipz.bills.LoginController"
+      alignment="CENTER"
+      spacing="15"
+      stylesheets="@styles.css">
+
+    <Label text="Bill Payment Service"
+           styleClass="title"/>
+
+    <Label text="Login"/>
+
+    <TextField
+            fx:id="loginField"
+            promptText="Username"
+            maxWidth="250"/>
+
+    <PasswordField
+            fx:id="passwordField"
+            promptText="Password"
+            maxWidth="250"/>
+
+    <Button
+            text="Sign In"
+            prefWidth="150"
+            onAction="#handleLogin"/>
+
+    <Button
+            text="Register"
+            prefWidth="150"
+            onAction="#openRegistration"/>
+
+</VBox>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.ipz.bills.MainController"
+      alignment="CENTER"
+      spacing="15"
+      stylesheets="@styles.css">
+
+    <Label text="Bill Payment"
+           styleClass="title"/>
+
+    <ComboBox fx:id="typeCombo"
+              promptText="Bill Type"
+              prefWidth="250"/>
+
+    <TextField fx:id="detailsField"
+               promptText="Payment Details"
+               maxWidth="250"/>
+
+    <TextField fx:id="amountField"
+               promptText="Amount"
+               maxWidth="250"/>
+
+    <Button fx:id="payButton"
+            text="Pay"
+            prefWidth="150"
+            onAction="#handlePayment"/>
+
+    <Button text="Payment History"
+            prefWidth="150"
+            onAction="#openHistory"/>
+
+    <Button text="Log Out"
+            prefWidth="150"
+            onAction="#handleLogout"/>
+
+</VBox>
