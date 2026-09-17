@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.ipz.bills.HistoryController"
+      alignment="CENTER"
+      spacing="15"
+      stylesheets="@styles.css">
+
+    <Label text="Payment History"
+           styleClass="title"/>
+
+    <TableView fx:id="paymentTable"
+               prefWidth="550"
+               prefHeight="300">
+
+        <columns>
+            <TableColumn fx:id="typeColumn"
+                         text="Bill Type"
+                         prefWidth="180"/>
+
+            <TableColumn fx:id="detailsColumn"
+                         text="Details"
+                         prefWidth="200"/>
+
+            <TableColumn fx:id="amountColumn"
+                         text="Amount"
+                         prefWidth="120"/>
+        </columns>
+
+    </TableView>
+
+</VBox>
