@@ -19,10 +19,12 @@ public class RegisterController {
 
     @FXML
     private void handleRegister() {
+
         try {
             String username = loginField.getText().trim();
             String password = passwordField.getText();
-            String confirmPassword = confirmPasswordField.getText();
+            String confirmPassword =
+                    confirmPasswordField.getText();
 
             if (username.isBlank()
                     || password.isBlank()
@@ -37,6 +39,7 @@ public class RegisterController {
             }
 
             if (!password.equals(confirmPassword)) {
+
                 showAlert(
                         Alert.AlertType.ERROR,
                         "Error",
@@ -45,14 +48,16 @@ public class RegisterController {
                 return;
             }
 
-            boolean registered =
-                    UserStore.register(username, password);
+            String response = NetworkClient.send(
+                    "REGISTER|" + username + "|" + password
+            );
 
-            if (!registered) {
+            if (!"REGISTER_SUCCESS".equals(response)) {
+
                 showAlert(
                         Alert.AlertType.ERROR,
                         "Error",
-                        "A user with this username already exists."
+                        "User already exists."
                 );
                 return;
             }
@@ -69,10 +74,11 @@ public class RegisterController {
             stage.close();
 
         } catch (Exception e) {
+
             showAlert(
                     Alert.AlertType.ERROR,
-                    "Error",
-                    "Registration failed."
+                    "Connection Error",
+                    "Could not connect to the server."
             );
         }
     }
@@ -82,6 +88,7 @@ public class RegisterController {
             String title,
             String message
     ) {
+
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
