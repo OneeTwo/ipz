@@ -1,5 +1,7 @@
 package com.ipz.bills;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -34,6 +36,50 @@ public class HistoryController {
                 new PropertyValueFactory<>("amount")
         );
 
-        paymentTable.setItems(MainController.payments);
+        loadHistory();
+    }
+
+    private void loadHistory() {
+
+        try {
+            String response = NetworkClient.send(
+                    "HISTORY|" + Session.getUsername()
+            );
+
+            ObservableList<Payment> payments =
+                    FXCollections.observableArrayList();
+
+            if (response != null
+                    && response.startsWith("HISTORY|")) {
+
+                String data = response.substring(8);
+
+                if (!data.isBlank()) {
+
+                    String[] records = data.split(";");
+
+                    for (String record : records) {
+
+                        String[] fields = record.split(",");
+
+                        if (fields.length == 3) {
+
+                            payments.add(
+                                    new Payment(
+                                            fields[0],
+                                            fields[1],
+                                            Double.parseDouble(fields[2])
+                                    )
+                            );
+                        }
+                    }
+                }
+            }
+
+            paymentTable.setItems(payments);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

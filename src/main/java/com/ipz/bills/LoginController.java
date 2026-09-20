@@ -18,6 +18,7 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
+
         try {
             String username = loginField.getText().trim();
             String password = passwordField.getText();
@@ -31,7 +32,11 @@ public class LoginController {
                 return;
             }
 
-            if (!UserStore.login(username, password)) {
+            String response = NetworkClient.send(
+                    "LOGIN|" + username + "|" + password
+            );
+
+            if (!"LOGIN_SUCCESS".equals(response)) {
                 showAlert(
                         Alert.AlertType.ERROR,
                         "Error",
@@ -40,13 +45,20 @@ public class LoginController {
                 return;
             }
 
+            Session.setUsername(username);
+
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/ipz/bills/main-view.fxml")
+                    getClass().getResource(
+                            "/com/ipz/bills/main-view.fxml"
+                    )
             );
 
             Stage mainStage = new Stage();
             mainStage.setTitle("Bill Payment Service");
-            mainStage.setScene(new Scene(loader.load(), 500, 450));
+            mainStage.setScene(
+                    new Scene(loader.load(), 500, 450)
+            );
+
             mainStage.show();
 
             Stage loginStage =
@@ -57,29 +69,35 @@ public class LoginController {
         } catch (Exception e) {
             showAlert(
                     Alert.AlertType.ERROR,
-                    "Error",
-                    "Could not sign in."
+                    "Connection Error",
+                    "Could not connect to the server."
             );
         }
     }
 
     @FXML
     private void openRegistration() {
+
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/ipz/bills/register-view.fxml")
+                    getClass().getResource(
+                            "/com/ipz/bills/register-view.fxml"
+                    )
             );
 
             Stage stage = new Stage();
             stage.setTitle("Registration");
-            stage.setScene(new Scene(loader.load(), 500, 450));
+            stage.setScene(
+                    new Scene(loader.load(), 500, 450)
+            );
+
             stage.show();
 
         } catch (Exception e) {
             showAlert(
                     Alert.AlertType.ERROR,
                     "Error",
-                    "Could not open the registration window."
+                    "Could not open registration."
             );
         }
     }
@@ -89,6 +107,7 @@ public class LoginController {
             String title,
             String message
     ) {
+
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);

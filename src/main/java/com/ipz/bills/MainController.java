@@ -1,12 +1,13 @@
 package com.ipz.bills;
 
 import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class MainController {
@@ -23,9 +24,6 @@ public class MainController {
     @FXML
     private Button payButton;
 
-    public static final ObservableList<Payment> payments =
-            FXCollections.observableArrayList();
-
     @FXML
     public void initialize() {
 
@@ -37,11 +35,8 @@ public class MainController {
                 "Internet"
         );
 
-        /*
-         * Data Binding:
-         * Pay button is disabled until all required fields
-         * contain data.
-         */
+        // Data Binding:
+        // Pay button is disabled until all required fields are filled.
         payButton.disableProperty().bind(
                 Bindings.createBooleanBinding(
                         () -> typeCombo.getValue() == null
@@ -56,6 +51,7 @@ public class MainController {
 
     @FXML
     private void handlePayment() {
+
         try {
             String type = typeCombo.getValue();
             String details = detailsField.getText().trim();
@@ -75,10 +71,42 @@ public class MainController {
                 return;
             }
 
-            Payment payment =
-                    new Payment(type, details, amount);
+            String username = Session.getUsername();
 
-            payments.add(payment);
+            if (username == null || username.isBlank()) {
+                showAlert(
+                        Alert.AlertType.ERROR,
+                        "Error",
+                        "No logged-in user."
+                );
+                return;
+            }
+
+            String request =
+                    "PAY|"
+                            + username
+                            + "|" + type
+                            + "|" + details
+                            + "|" + amount;
+
+            String response = NetworkClient.send(request);
+
+            if (!"PAYMENT_SUCCESS".equals(response)) {
+
+                String message = "Payment failed.";
+
+                if (response != null && response.startsWith("ERROR|")) {
+                    message = response.substring(6);
+                }
+
+                showAlert(
+                        Alert.AlertType.ERROR,
+                        "Error",
+                        message
+                );
+
+                return;
+            }
 
             showAlert(
                     Alert.AlertType.INFORMATION,
@@ -91,6 +119,7 @@ public class MainController {
             amountField.clear();
 
         } catch (NumberFormatException e) {
+
             showAlert(
                     Alert.AlertType.ERROR,
                     "Error",
@@ -98,27 +127,36 @@ public class MainController {
             );
 
         } catch (Exception e) {
+
             showAlert(
                     Alert.AlertType.ERROR,
-                    "Error",
-                    "Payment failed."
+                    "Connection Error",
+                    "Could not connect to the server."
             );
         }
     }
 
     @FXML
     private void openHistory() {
+
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/ipz/bills/history-view.fxml")
+                    getClass().getResource(
+                            "/com/ipz/bills/history-view.fxml"
+                    )
             );
 
             Stage stage = new Stage();
             stage.setTitle("Payment History");
-            stage.setScene(new Scene(loader.load(), 600, 400));
+
+            stage.setScene(
+                    new Scene(loader.load(), 600, 400)
+            );
+
             stage.show();
 
         } catch (Exception e) {
+
             showAlert(
                     Alert.AlertType.ERROR,
                     "Error",
@@ -129,16 +167,23 @@ public class MainController {
 
     @FXML
     private void handleLogout() {
+
         try {
+            Session.clear();
+
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/ipz/bills/login-view.fxml")
+                    getClass().getResource(
+                            "/com/ipz/bills/login-view.fxml"
+                    )
             );
 
             Stage loginStage = new Stage();
             loginStage.setTitle("Bill Payment Service");
+
             loginStage.setScene(
                     new Scene(loader.load(), 500, 400)
             );
+
             loginStage.show();
 
             Stage currentStage =
@@ -147,6 +192,7 @@ public class MainController {
             currentStage.close();
 
         } catch (Exception e) {
+
             showAlert(
                     Alert.AlertType.ERROR,
                     "Error",
@@ -160,10 +206,13 @@ public class MainController {
             String title,
             String message
     ) {
+
         Alert alert = new Alert(type);
+
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+
         alert.showAndWait();
     }
 }
